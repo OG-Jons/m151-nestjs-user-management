@@ -16,11 +16,6 @@ import { User } from './entities/user.entity';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
-  }
-
   @Get()
   async findAll(): Promise<User[]> {
     return await this.userService.findAll();
@@ -29,6 +24,11 @@ export class UserController {
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<User> {
     return await this.userService.findOne(id);
+  }
+
+  @Post()
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.create(createUserDto);
   }
 
   @Patch(':id')
@@ -40,7 +40,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): void {
-    return this.userService.remove(+id);
+  async remove(@Param('id') id: number) {
+    return this.userService.remove(id);
   }
 }
