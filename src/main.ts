@@ -12,6 +12,12 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
 
+  app.enableCors({
+    origin: true,
+    methods: 'GET,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('', app, document);
 
