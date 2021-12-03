@@ -11,16 +11,28 @@ export class UserService {
   ) {}
 
   async getUsers(): Promise<User[]> {
-    return await this.userRepository.find();
+    const users: User[] = await this.userRepository.find();
+    users.forEach((user) => {
+      delete user.password;
+    });
+    return users;
   }
 
   async getOneUser(id: number): Promise<User> {
-    return await this.userRepository.findOne({ id });
+    const user = await this.userRepository.findOne({ id });
+    delete user.password;
+    return user;
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     updateUserDto.id = id;
-    return await this.userRepository.save(updateUserDto);
+    const user = await this.userRepository.findOne({ id });
+    for (const key in updateUserDto) {
+      user[key] = updateUserDto[key];
+    }
+    const updatedUser = await this.userRepository.save(user);
+    delete updatedUser.password;
+    return updatedUser;
   }
 
   async deleteUser(id: number): Promise<void> {
