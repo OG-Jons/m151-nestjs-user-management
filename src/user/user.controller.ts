@@ -3,44 +3,50 @@ import {
   Controller,
   Delete,
   Get,
+  NotImplementedException,
   Param,
   Patch,
-  Post,
+  UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from './user.entity';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { UpdateUserDto } from '../auth/dto/update-user.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private userService: UserService) {}
 
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   @Get()
-  async findAll(): Promise<User[]> {
-    return await this.userService.findAll();
+  async getUsers(): Promise<User[]> {
+    return await this.userService.getUsers();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number): Promise<User> {
-    return await this.userService.findOne(id);
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @Get('/:id')
+  async getUser(@Param('id') id: number): Promise<User> {
+    return await this.userService.getOneUser(id);
   }
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
-  }
-
-  @Patch(':id')
-  async update(
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @Patch('/:id')
+  async updateUser(
     @Param('id') id: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return await this.userService.update(id, updateUserDto);
+    return await this.userService.updateUser(id, updateUserDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
-    return this.userService.remove(id);
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @Delete('/:id')
+  async deleteUser(@Param('id') id: number): Promise<void> {
+    await this.userService.deleteUser(id);
   }
 }

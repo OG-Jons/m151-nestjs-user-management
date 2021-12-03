@@ -8,6 +8,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('M151 User management')
     .setDescription('Manage Users and authenticate using jwt')
+    .addBearerAuth()
     .setVersion('1.0')
     .build();
 
